@@ -1,0 +1,29 @@
+# ============================================================
+# dev：MySQL + 独立执行器
+#
+# 先执行 sql/schema-mysql.sql 建库建表，再以 dev profile 启动调度中心。
+# 执行器需要单独启动（把 tickjob.executor.enabled 打开，指向本机 8080）。
+# ============================================================
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tickjob?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 3000
+  sql:
+    init:
+      # 表结构由 sql/schema-mysql.sql 管理，应用不做任何 DDL
+      mode: never
+
+tickjob:
+  executor:
+    # dev 环境建议单独起一个执行器进程，这样才看得到真实的分片广播与故障转移
+    enabled: false
+
+logging:
+  level:
+    com.kong.tickjob: DEBUG

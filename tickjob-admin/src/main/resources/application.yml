@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: tickjob-admin
+  profiles:
+    active: local
+  jackson:
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+
+mybatis:
+  configuration:
+    # 库里是 job_name / trigger_next_time 这种下划线命名，实体是驼峰 —— 打开自动映射省掉大量 @Results
+    map-underscore-to-camel-case: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+tickjob:
+  schedule:
+    # 预读窗口（秒）：把「未来 5 秒内要触发」的任务捞出来
+    pre-read-seconds: 5
+    # 预读间隔（秒）：必须明显小于预读窗口，否则会漏任务
+    pre-read-interval-seconds: 1
+    # 触发超时（秒）：/run 是收单即返回，所以可以设得很短
+    trigger-timeout-seconds: 5
+    # 执行器失联阈值（秒）：心跳间隔的 3 倍
+    executor-dead-threshold-seconds: 90
+    registry-evict-interval-seconds: 30
+    # 结果回报超时（秒）：超过这么久没回报就认定执行器已退出
+    log-lost-threshold-seconds: 180
+    log-monitor-interval-seconds: 60
+
+logging:
+  level:
+    com.kong.tickjob: INFO
